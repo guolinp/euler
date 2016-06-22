@@ -25,8 +25,10 @@ static struct serial_conn *serial_conn_new(void)
 
 void serial_conn_free(struct serial_conn *conn)
 {
-	if (conn && conn->fd > 0)
+	if (conn && conn->fd > 0) {
 		close(conn->fd);
+		free(conn);
+	}
 }
 
 int serial_send(struct serial_conn *conn, char *buf, int size)

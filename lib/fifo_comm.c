@@ -23,8 +23,10 @@ static struct fifo_conn *fifo_conn_new(void)
 
 void fifo_conn_free(struct fifo_conn *conn)
 {
-	if (conn && conn->fd > 0)
+	if (conn && conn->fd > 0) {
 		close(conn->fd);
+		free(conn);
+	}
 }
 
 int fifo_send(struct fifo_conn *conn, char *buf, int size)
@@ -66,7 +68,7 @@ struct fifo_conn *fifo_accept_connection(const char *pathname)
 
 	if ((mkfifo(pathname, S_IRWXU) < 0) && (errno != EEXIST)) {
 		dbg_printf("cannot create fifo file %s, errno %d\n", pathname, errno);
-		goto err_conn;
+		goto err_fifo;
 	}
 
 	fd = open(pathname, O_RDONLY);
@@ -81,6 +83,7 @@ struct fifo_conn *fifo_accept_connection(const char *pathname)
 
   err_fd:
 	close(fd);
+  err_fifo:
 	fifo_conn_free(conn);
   err_conn:
 	return NULL;
@@ -112,7 +115,6 @@ struct fifo_conn *fifo_connect(const char *pathname)
 	return conn;
 
   err_fd:
-	close(fd);
 	fifo_conn_free(conn);
   err_conn:
 	return NULL;

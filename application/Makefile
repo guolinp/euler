@@ -4,7 +4,7 @@ SRCS := $(shell ls *.c)
 SRCS_CXX := $(shell ls *.cpp)
 OBJS := $(SRCS:%.c=%.o) $(SRCS_CXX:%.cpp=%.o)
 
-LIBS += -lrt
+LIBS += -lrt -lpcap
 
 app_all: $(OBJS) cxx_app c_app
 
@@ -32,6 +32,8 @@ c_app:
 	$(call MFO, tcp_socket)
 	$(call MFO, udp_socket)
 	$(call MFO, raw_socket)
+	$(call MFO, pcap_comm)
+	$(call MFO, tap_comm)
 	$(call MFO, fifo_comm)
 	$(call MFO, shm_comm)
 	$(call MFO, ptty_comm)

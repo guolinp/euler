@@ -80,7 +80,7 @@ int shm_send(struct shm_conn *conn, char *buf, int size)
 	ret = sem_wait(&ssc->w_sem);
 	if (ret) {
 		dbg_printf("cannot wait the w_sem, errno %d\n", errno);
-		return -EINVAL;
+		return -EFAULT;
 	}
 
 	if (size > conn->shm_size - SHARE_CONTEXT_SIZE)
@@ -92,7 +92,7 @@ int shm_send(struct shm_conn *conn, char *buf, int size)
 	ret = sem_post(&ssc->r_sem);
 	if (ret) {
 		dbg_printf("cannot post the r_sem, errno %d\n", errno);
-		return -EINVAL;
+		return -EFAULT;
 	}
 
 	return size;
@@ -111,7 +111,7 @@ int shm_recv(struct shm_conn *conn, char *buf, int size)
 	ret = sem_wait(&ssc->r_sem);
 	if (ret) {
 		dbg_printf("cannot wait the r_sem, errno %d\n", errno);
-		return -EINVAL;
+		return -EFAULT;
 	}
 
 	if (size > get_data_size(conn))
@@ -122,7 +122,7 @@ int shm_recv(struct shm_conn *conn, char *buf, int size)
 	ret = sem_post(&ssc->w_sem);
 	if (ret) {
 		dbg_printf("cannot post the w_sem, errno %d\n", errno);
-		return -EINVAL;
+		return -EFAULT;
 	}
 
 	return size;

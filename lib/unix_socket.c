@@ -34,6 +34,8 @@ void unix_socket_conn_free(struct unix_socket_conn *conn)
 
 	if (conn->s_sock > 0)
 		close(conn->s_sock);
+
+	free(conn);
 }
 
 int unix_socket_send(struct unix_socket_conn *conn, char *buf, int size)
@@ -88,18 +90,18 @@ struct unix_socket_conn *unix_socket_accept_connection(const char *pathname)
 
 	if (bind(s_sock, (struct sockaddr *) &address, addr_len)) {
 		dbg_printf("cannot bind the address, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	if (listen(s_sock, 1)) {
 		dbg_printf("cannot listen connection, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	c_sock = accept(s_sock, (struct sockaddr *) &address, &addr_len);
 	if (c_sock < 0) {
 		dbg_printf("accept a new connection failed, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	conn->c_sock = c_sock;
@@ -107,8 +109,9 @@ struct unix_socket_conn *unix_socket_accept_connection(const char *pathname)
 
 	return conn;
 
-  err_sock:
+  err_op:
 	close(s_sock);
+  err_sock:
 	unix_socket_conn_free(conn);
   err_conn:
 	return NULL;
@@ -145,15 +148,16 @@ struct unix_socket_conn *unix_socket_connect(const char *pathname)
 
 	if (connect(c_sock, (struct sockaddr *) &address, addr_len) < 0) {
 		dbg_printf("accept a new connection failed, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	conn->c_sock = c_sock;
 
 	return conn;
 
-  err_sock:
+  err_op:
 	close(c_sock);
+  err_sock:
 	unix_socket_conn_free(conn);
   err_conn:
 	return NULL;

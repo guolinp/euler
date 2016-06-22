@@ -30,8 +30,10 @@ static struct udp_socket_conn *udp_socket_conn_new(void)
 
 void udp_socket_conn_free(struct udp_socket_conn *conn)
 {
-	if (conn && conn->sock > 0)
+	if (conn && conn->sock > 0) {
 		close(conn->sock);
+		free(conn);
+	}
 }
 
 int udp_socket_send(struct udp_socket_conn *conn, char *buf, int size)
@@ -79,15 +81,16 @@ struct udp_socket_conn *udp_socket_accept_connection(const char *local_ip, unsig
 
 	if (bind(s_sock, (struct sockaddr *) &conn->local_addr, sizeof(conn->local_addr))) {
 		dbg_printf("cannot bind the address, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	conn->sock = s_sock;
 
 	return conn;
 
-  err_sock:
+  err_op:
 	close(s_sock);
+  err_sock:
 	udp_socket_conn_free(conn);
   err_conn:
 	return NULL;
@@ -123,7 +126,6 @@ struct udp_socket_conn *udp_socket_connect(const char *target_ip, unsigned short
 	return conn;
 
   err_sock:
-	close(c_sock);
 	udp_socket_conn_free(conn);
   err_conn:
 	return NULL;

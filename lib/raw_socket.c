@@ -31,8 +31,10 @@ static struct raw_socket_conn *raw_socket_conn_new(void)
 
 void raw_socket_conn_free(struct raw_socket_conn *conn)
 {
-	if (conn && conn->sock > 0)
+	if (conn && conn->sock > 0) {
 		close(conn->sock);
+		free(conn);
+	}
 }
 
 int raw_socket_send(struct raw_socket_conn *conn, char *buf, int size)
@@ -131,7 +133,7 @@ int raw_socket_conn_attach_filter(struct raw_socket_conn *conn, struct sock_filt
 
 	if (setsockopt(conn->sock, SOL_SOCKET, SO_ATTACH_FILTER, &filter, sizeof(filter)) < 0) {
 		dbg_printf("attach the bpf filter failed, errno %d\n", errno);
-		return -EINVAL;
+		return -EIO;
 	}
 
 	trc_printf("the socket filter: \n");

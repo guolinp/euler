@@ -34,6 +34,8 @@ void ptty_conn_free(struct ptty_conn *conn)
 
 	if (conn->pts_fd > 0)
 		close(conn->pts_fd);
+
+	free(conn);
 }
 
 int ptty_send(struct ptty_conn *conn, char *buf, int size)
@@ -113,7 +115,9 @@ struct ptty_conn *ptty_accept_connection(const char *pathname)
 
   err_symlink:
   err_setown:
+	close(pts_fd);
   err_pts:
+	close(ptm_fd);
   err_ptm_fd:
 	ptty_conn_free(conn);
   err_conn:

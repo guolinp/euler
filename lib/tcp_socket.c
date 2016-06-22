@@ -35,6 +35,8 @@ void tcp_socket_conn_free(struct tcp_socket_conn *conn)
 
 	if (conn->s_sock > 0)
 		close(conn->s_sock);
+
+	free(conn);
 }
 
 int tcp_socket_send(struct tcp_socket_conn *conn, char *buf, int size)
@@ -87,18 +89,18 @@ struct tcp_socket_conn *tcp_socket_accept_connection(const char *local_ip, unsig
 
 	if (bind(s_sock, (struct sockaddr *) &host_addr, sizeof(host_addr))) {
 		dbg_printf("cannot bind the address, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	if (listen(s_sock, 1)) {
 		dbg_printf("cannot listen connection, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	c_sock = accept(s_sock, (struct sockaddr *) &client_addr, &client_addr_len);
 	if (c_sock < 0) {
 		dbg_printf("accept a new connection failed, errno %d\n", errno);
-		goto err_sock;
+		goto err_op;
 	}
 
 	conn->c_sock = c_sock;
@@ -106,8 +108,9 @@ struct tcp_socket_conn *tcp_socket_accept_connection(const char *local_ip, unsig
 
 	return conn;
 
-  err_sock:
+  err_op:
 	close(s_sock);
+  err_sock:
 	tcp_socket_conn_free(conn);
   err_conn:
 	return NULL;

@@ -24,8 +24,10 @@ static struct msgq_conn *msgq_conn_new(void)
 
 void msgq_conn_free(struct msgq_conn *conn)
 {
-	if (conn && conn->msgq_id > 0)
+	if (conn && conn->msgq_id > 0) {
 		mq_close(conn->msgq_id);
+		free(conn);
+	}
 }
 
 int msgq_send(struct msgq_conn *conn, char *buf, int size)
