@@ -29,7 +29,7 @@ void fifo_conn_free(struct fifo_conn *conn)
 	}
 }
 
-int fifo_send(struct fifo_conn *conn, char *buf, int size)
+int fifo_conn_send(struct fifo_conn *conn, char *buf, int size)
 {
 	int ret;
 	if (!conn || conn->fd < 0 || !buf || size <= 0)
@@ -38,7 +38,7 @@ int fifo_send(struct fifo_conn *conn, char *buf, int size)
 	return ret;
 }
 
-int fifo_recv(struct fifo_conn *conn, char *buf, int size)
+int fifo_conn_recv(struct fifo_conn *conn, char *buf, int size)
 {
 	int ret;
 	if (!conn || conn->fd < 0 || !buf || size <= 0)
@@ -47,7 +47,7 @@ int fifo_recv(struct fifo_conn *conn, char *buf, int size)
 	return ret;
 }
 
-struct fifo_conn *fifo_accept_connection(const char *pathname)
+struct fifo_conn *fifo_conn_accept_connection(const char *pathname)
 {
 	struct fifo_conn *conn;
 	int fd;
@@ -89,7 +89,7 @@ struct fifo_conn *fifo_accept_connection(const char *pathname)
 	return NULL;
 }
 
-struct fifo_conn *fifo_connect(const char *pathname)
+struct fifo_conn *fifo_conn_connect(const char *pathname)
 {
 	struct fifo_conn *conn;
 	int fd;

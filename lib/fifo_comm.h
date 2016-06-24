@@ -9,25 +9,25 @@ struct fifo_conn;
  * return a ptr points to a struct fifo_conn on success
  * return NULL on failed
  * */
-struct fifo_conn *fifo_accept_connection(const char *pathname);
+struct fifo_conn *fifo_conn_accept_connection(const char *pathname);
 
 /* connect the server though pathname
  * return a ptr points to a struct fifo_conn on success
  * return NULL on failed
  * */
-struct fifo_conn *fifo_connect(const char *pathname);
+struct fifo_conn *fifo_conn_connect(const char *pathname);
 
 /* send data
  * return data length sent on success
  * return -1 on failed
  * **/
-int fifo_send(struct fifo_conn *conn, char *buf, int size);
+int fifo_conn_send(struct fifo_conn *conn, char *buf, int size);
 
 /* receive data
  * return data length received on success
  * return -1 on failed
  * */
-int fifo_recv(struct fifo_conn *conn, char *buf, int size);
+int fifo_conn_recv(struct fifo_conn *conn, char *buf, int size);
 
 /* free a connection resource
  * */

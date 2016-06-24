@@ -12,14 +12,14 @@ static void run_server(const char *pathname)
 	int len;
 
 	while (1) {
-		conn = fifo_accept_connection(pathname);
+		conn = fifo_conn_accept_connection(pathname);
 		if (!conn) {
 			dbg_printf("accept failed\n");
 			continue;
 		}
 
 		while (1) {
-			len = fifo_recv(conn, buf, 127);
+			len = fifo_conn_recv(conn, buf, 127);
 			if (len <= 0) {
 				dbg_printf("receive failed\n");
 				fifo_conn_free(conn);
@@ -37,13 +37,13 @@ static void run_client(const char *pathname)
 	char *str = "this is a fifo ipc tx/tx test string\n";
 	int len;
 
-	conn = fifo_connect(pathname);
+	conn = fifo_conn_connect(pathname);
 	if (!conn) {
 		dbg_printf("connect failed\n");
 		return;
 	}
 
-	len = fifo_send(conn, str, strlen(str));
+	len = fifo_conn_send(conn, str, strlen(str));
 	if (len <= 0)
 		dbg_printf("send failed\n");
 	else

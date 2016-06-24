@@ -79,7 +79,7 @@ struct ptty_conn *ptty_accept_connection(const char *pathname)
 		goto err_ptm_fd;
 	}
 
-	pts_name = (char *) ptsname(ptm_fd);
+	pts_name = (char *)(intptr_t)ptsname(ptm_fd);
 	if (NULL == pts_name) {
 		dbg_printf("cannot open get pts name, errno %d\n", errno);
 		goto err_pts;
